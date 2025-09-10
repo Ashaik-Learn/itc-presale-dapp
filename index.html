@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <title>ITC Presale Purchase</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Ethers.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <!-- Ethers.js CDN (Cloudflare) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
   <style>
     body {
       background: linear-gradient(120deg, #16233b, #2986e7 100%);
@@ -80,7 +80,6 @@ const PRESALE_CONTRACT = "0xd1887abfadc7b5de18c54a547490c8dea792686b";
 const ITC_TOKEN_DECIMALS = 18;
 const presaleAbi = ["function buyWithETH(uint256 tokenAmount) external payable"];
 const presaleStartTime = Date.now();
-
 function updateCountdown() {
   let now = Date.now();
   let remainingMs = PHASE1_DURATION - (now - presaleStartTime);
@@ -93,7 +92,6 @@ function updateCountdown() {
     `Phase 1 ends in ${days} days, ${hours} hours, ${mins} minutes`;
 }
 setInterval(updateCountdown, 1000); updateCountdown();
-
 const tokenInput = document.getElementById("tokenAmount");
 const usdcInput = document.getElementById("usdcAmount");
 tokenInput.oninput = function() {
@@ -106,7 +104,6 @@ usdcInput.oninput = function() {
     tokenInput.value = (usdcInput.value / PHASE1_PRICE_USDC).toFixed(2);
   } else tokenInput.value = "";
 };
-
 let provider, signer, connectedAddress;
 document.getElementById("connectWalletBtn").onclick = async () => {
   const walletStatus = document.getElementById("walletStatus");
@@ -126,7 +123,6 @@ document.getElementById("connectWalletBtn").onclick = async () => {
     walletStatus.textContent = "Wallet connection failed: " + (err.message || err);
   }
 };
-
 document.getElementById("buyWithEthBtn").onclick = async () => {
   const buyResult = document.getElementById("buyResult");
   buyResult.textContent = "";
@@ -157,4 +153,3 @@ document.getElementById("buyWithEthBtn").onclick = async () => {
 </script>
 </body>
 </html>
-

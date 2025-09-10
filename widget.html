@@ -38,14 +38,31 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000); updateCountdown();
 const tokenInput = document.getElementById("tokenAmount");
 const usdcInput = document.getElementById("usdcAmount");
+// Keep ITC input to max 18 decimals and valid
+function sanitizeAmount(val) {
+  val = (val || '').toString().replace(/[^0-9.]/g, '').replace(/^0+([1-9])/g, '$1').trim();
+  if(val === "") return "";
+  if(val.includes('.')) {
+    let [whole, fraction] = val.split('.');
+    fraction = (fraction || '').replace(/0+$/, '').slice(0, 18);
+    return whole + (fraction ? '.' + fraction : '');
+  }
+  return val;
+}
 tokenInput.oninput = function() {
-  if (tokenInput.value && !isNaN(tokenInput.value) && tokenInput.value > 0) {
-    usdcInput.value = (tokenInput.value * PHASE1_PRICE_USDC).toFixed(2);
-  } else usdcInput.value = "";
+  let val = sanitizeAmount(tokenInput.value);
+  if (val && !isNaN(val) && Number(val) > 0) {
+    tokenInput.value = val; // enforce sanitation
+    usdcInput.value = (Number(val) * PHASE1_PRICE_USDC).toFixed(2);
+  } else {
+    usdcInput.value = "";
+  }
 };
 usdcInput.oninput = function() {
-  if (usdcInput.value && !isNaN(usdcInput.value) && usdcInput.value > 0) {
-    tokenInput.value = (usdcInput.value / PHASE1_PRICE_USDC).toFixed(2);
+  let val = sanitizeAmount(usdcInput.value);
+  if (val && !isNaN(val) && Number(val) > 0) {
+    usdcInput.value = val;
+    tokenInput.value = (Number(val) / PHASE1_PRICE_USDC).toFixed(2);
   } else tokenInput.value = "";
 };
 let provider, signer, connectedAddress;
@@ -74,7 +91,7 @@ document.getElementById("buyWithEthBtn").onclick = async () => {
     buyResult.textContent = "Please connect your wallet first.";
     return;
   }
-  const tokenAmountVal = tokenInput.value;
+  let tokenAmountVal = sanitizeAmount(tokenInput.value);
   if (!tokenAmountVal || isNaN(tokenAmountVal) || tokenAmountVal <= 0) {
     buyResult.textContent = "Enter a valid ITC amount.";
     return;
@@ -86,7 +103,7 @@ document.getElementById("buyWithEthBtn").onclick = async () => {
       (ethPricePerToken * tokenAmountVal).toString()
     );
     const tx = await contract.buyWithETH(
-      ethers.utils.parseUnits(tokenAmountVal.toString(), ITC_TOKEN_DECIMALS),
+      ethers.utils.parseUnits(tokenAmountVal, ITC_TOKEN_DECIMALS),
       { value: ethValue }
     );
     buyResult.textContent = "✅ Transaction sent! Tx Hash: " + tx.hash;

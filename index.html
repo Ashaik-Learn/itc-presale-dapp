@@ -8,13 +8,31 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
   <style>
     body {
-      background: linear-gradient(120deg, #16233b, #2986e7 100%);
       min-height: 100vh;
       margin: 0;
       font-family: 'Segoe UI', 'Arial', sans-serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      /* Deep black-blue vertical gradient, inspired by IT Capitals homepage */
+      background: linear-gradient(180deg, #050d1f 0%, #092048 80%, #153564 100%);
+      /* fallback for old browsers */
+      background-color: #071333;
+    }
+    #header {
+      display: flex;
       align-items: center;
+      height: 76px;
+      padding-left: 34px;
+      margin-bottom: 16px;
+    }
+    #header img {
+      height: 54px;
+      width: auto;
+      margin-right: 20px;
+      border-radius: 0;
+      object-fit: contain;
     }
     #presale-widget {
       background: linear-gradient(135deg, #0a1a35 0%, #1e2d3d 35%, #2d6cf6 100%);
@@ -26,8 +44,11 @@
       text-align: center;
       margin: 0 auto;
     }
-    #countdown {
-      font-size:18px; margin-bottom:8px; color: #00ffe7;
+    #countup-timer {
+      font-size:17px;
+      margin-bottom:10px;
+      color: #00ffe7;
+      text-align: center;
     }
     .msg-main { font-size:16px; margin-bottom:8px; }
     .msg-urgency { color:#ffecb6; margin-bottom:14px; font-size:15px; }
@@ -45,53 +66,80 @@
     #buyWithEthBtn:disabled { background: #2d3847; color: #aac2ff; cursor: not-allowed;}
     #walletStatus { color:#affcff; font-size:15px; margin-bottom:8px; min-height:24px;}
     #buyResult { margin-top:14px; color:#affcff; font-size:15px; min-height:24px;}
+
+    #footer-bar {
+      margin-top: 50px;
+      width: 100vw;
+      min-height: 28px;
+      color: #88a7db;
+      font-size: 15px;
+      text-align: center;
+      letter-spacing: 1.1px;
+      margin-bottom: 18px;
+      opacity: 0.95;
+    }
     @media (max-width:480px) {
-      #presale-widget { max-width:97vw; padding:22px; }
+      #header { padding-left: 7vw; height: 52px;}
+      #header img { height: 34px; margin-right: 10px;}
+      #presale-widget { max-width:97vw; padding:22px;}
       input[type="number"] { font-size:15px; }
       button { font-size:16px; padding:10px 12px;}
       .msg-main, .msg-urgency { font-size:14px; }
+      #footer-bar { font-size:12px; margin-top:28px;}
     }
   </style>
 </head>
 <body>
-<div id="presale-widget">
-  <h2 style="margin-bottom: 20px;">ITC Presale Purchase</h2>
-  <div id="countdown"></div>
-  <div class="msg-main">
-    <strong>Phase 1:</strong> <span style="color:#affcff;">$0.50 USDC / ITC</span>
+  <div id="header">
+    <img src="image.jpg" alt="IT Capitals Logo" />
+    <span style="font-size:21px; letter-spacing:1.8px; color:white; font-family:'Segoe UI',sans-serif; font-weight: 500;">IT CAPITALS</span>
   </div>
-  <div class="msg-urgency">
-    🚀 Hurry! Price goes up to $0.75 USDC next phase!
+  <div id="presale-widget">
+    <h2 style="margin-bottom: 20px;">ITC Presale Purchase</h2>
+    <div id="countup-timer"></div>
+    <div class="msg-main">
+      <strong>Phase 1:</strong> <span style="color:#affcff;">$0.50 USDC / ITC</span>
+    </div>
+    <div class="msg-urgency">
+      🚀 Hurry! Price goes up to $0.75 USDC next phase!
+    </div>
+    <button id="connectWalletBtn">Connect MetaMask</button>
+    <div id="walletStatus"></div>
+    <div class="input-row">
+      <input id="tokenAmount" type="number" min="1" placeholder="ITC Amount" />
+      <input id="usdcAmount" type="number" min="0" step="0.01" placeholder="USDC Value" />
+    </div>
+    <button id="buyWithEthBtn" disabled>Buy ITC With ETH</button>
+    <div id="buyResult"></div>
   </div>
-  <button id="connectWalletBtn">Connect MetaMask</button>
-  <div id="walletStatus"></div>
-  <div class="input-row">
-    <input id="tokenAmount" type="number" min="1" placeholder="ITC Amount" />
-    <input id="usdcAmount" type="number" min="0" step="0.01" placeholder="USDC Value" />
+  <div id="footer-bar">
+    Powered by IT Capitals, ON, Canada.
   </div>
-  <button id="buyWithEthBtn" disabled>Buy ITC With ETH</button>
-  <div id="buyResult"></div>
-</div>
 <script>
-const PHASE1_DURATION = 180 * 24 * 60 * 60 * 1000; // 180 days
+// Set presale start date in UTC (for global consistency!)
+const PRESALE_START_ISO = '2025-09-10T00:00:00Z';
+const presaleStartDate = new Date(PRESALE_START_ISO);
+
+function updateCountupTimer() {
+  const now = new Date();
+  let elapsedMs = now.getTime() - presaleStartDate.getTime();
+  if (elapsedMs < 0) elapsedMs = 0; // Not started yet
+  const totalSecs = Math.floor(elapsedMs / 1000);
+  const days = Math.floor(totalSecs / (24 * 3600));
+  const hours = Math.floor((totalSecs % (24 * 3600)) / 3600);
+  const mins = Math.floor((totalSecs % 3600) / 60);
+  const secs = totalSecs % 60;
+  document.getElementById("countup-timer").textContent =
+    `Presale running (in UTC): ${days}d ${hours}h ${mins}m ${secs}s`;
+}
+setInterval(updateCountupTimer, 1000); updateCountupTimer();
+
 const PHASE1_PRICE_USDC = 0.50;
 const ETH_PRICE_USDC = 4302.55;
 const PRESALE_CONTRACT = "0xd1887abfadc7b5de18c54a547490c8dea792686b";
 const ITC_TOKEN_DECIMALS = 18;
 const presaleAbi = ["function buyWithETH(uint256 tokenAmount) external payable"];
-const presaleStartTime = Date.now();
-function updateCountdown() {
-  let now = Date.now();
-  let remainingMs = PHASE1_DURATION - (now - presaleStartTime);
-  if (remainingMs < 0) remainingMs = 0;
-  let totalSecs = Math.floor(remainingMs / 1000);
-  let days = Math.floor(totalSecs / (24 * 3600));
-  let hours = Math.floor((totalSecs % (24 * 3600)) / 3600);
-  let mins = Math.floor((totalSecs % 3600) / 60);
-  document.getElementById("countdown").textContent =
-    `Phase 1 ends in ${days} days, ${hours} hours, ${mins} minutes`;
-}
-setInterval(updateCountdown, 1000); updateCountdown();
+
 const tokenInput = document.getElementById("tokenAmount");
 const usdcInput = document.getElementById("usdcAmount");
 tokenInput.oninput = function() {

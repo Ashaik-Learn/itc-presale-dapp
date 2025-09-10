@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <title>ITC Presale Purchase</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Web3Modal v2 CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/web3modal@2.9.2/dist/index.js"></script>
   <!-- Ethers.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
   <style>
@@ -29,52 +27,24 @@
       margin: 0 auto;
     }
     #countdown {
-      font-size:18px; margin-bottom:8px;
-      color: #00ffe7;
+      font-size:18px; margin-bottom:8px; color: #00ffe7;
     }
-    .msg-main {
-      font-size:16px; margin-bottom:8px;
-    }
-    .msg-urgency {
-      color:#ffecb6; margin-bottom:14px; font-size:15px;
-    }
-    .input-row {
-      margin-bottom:10px; display:flex; gap:6px; justify-content:center;
-    }
+    .msg-main { font-size:16px; margin-bottom:8px; }
+    .msg-urgency { color:#ffecb6; margin-bottom:14px; font-size:15px; }
+    .input-row { margin-bottom:10px; display:flex; gap:6px; justify-content:center; }
     input[type="number"] {
-      width:48%;
-      padding: 7px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: none;
-      background: #182a47;
-      color: #fafcff;
+      width:48%; padding:7px; font-size:16px; border-radius:10px; border:none;
+      background: #182a47; color: #fafcff;
     }
     button {
       background: linear-gradient(90deg, #2038a8, #2d6cf6 70%);
-      color: #fff;
-      border: none;
-      font-size: 18px;
-      padding: 12px 32px;
-      margin-top: 6px;
-      border-radius: 13px;
-      cursor: pointer;
-      font-weight: 600;
-      letter-spacing: 1px;
-      transition: background 0.3s;
+      color: #fff; border: none; font-size:18px; padding:12px 32px; margin-top: 6px;
+      border-radius:13px; cursor:pointer; font-weight:600; letter-spacing:1px; transition: background 0.3s;
       box-shadow: 0 8px 24px rgba(44,108,246,0.23);
     }
-    #buyWithEthBtn:disabled {
-      background: #2d3847; color: #aac2ff; cursor: not-allowed;
-    }
-    #walletStatus {
-      color:#affcff; font-size:15px; margin-bottom:8px;
-      min-height:24px;
-    }
-    #buyResult {
-      margin-top:14px; color:#affcff; font-size:15px;
-      min-height:24px;
-    }
+    #buyWithEthBtn:disabled { background: #2d3847; color: #aac2ff; cursor: not-allowed;}
+    #walletStatus { color:#affcff; font-size:15px; margin-bottom:8px; min-height:24px;}
+    #buyResult { margin-top:14px; color:#affcff; font-size:15px; min-height:24px;}
     @media (max-width:480px) {
       #presale-widget { max-width:97vw; padding:22px; }
       input[type="number"] { font-size:15px; }
@@ -93,7 +63,7 @@
   <div class="msg-urgency">
     🚀 Hurry! Price goes up to $0.75 USDC next phase!
   </div>
-  <button id="connectWalletBtn">Connect Wallet</button>
+  <button id="connectWalletBtn">Connect MetaMask</button>
   <div id="walletStatus"></div>
   <div class="input-row">
     <input id="tokenAmount" type="number" min="1" placeholder="ITC Amount" />
@@ -102,18 +72,13 @@
   <button id="buyWithEthBtn" disabled>Buy ITC With ETH</button>
   <div id="buyResult"></div>
 </div>
-
 <script>
-const PHASE1_DURATION = 180 * 24 * 60 * 60 * 1000; // 180 days in ms
-const PHASE1_PRICE_USDC = 0.50; // $0.50 USDC per ITC
-const PHASE2_PRICE_USDC = 0.75; // $0.75 next phase price
-const ETH_PRICE_USDC = 4302.55; // 1 ETH = 4302.55 USDC
-
+const PHASE1_DURATION = 180 * 24 * 60 * 60 * 1000; // 180 days
+const PHASE1_PRICE_USDC = 0.50;
+const ETH_PRICE_USDC = 4302.55;
 const PRESALE_CONTRACT = "0xd1887abfadc7b5de18c54a547490c8dea792686b";
 const ITC_TOKEN_DECIMALS = 18;
-const presaleAbi = [
-  "function buyWithETH(uint256 tokenAmount) external payable"
-];
+const presaleAbi = ["function buyWithETH(uint256 tokenAmount) external payable"];
 const presaleStartTime = Date.now();
 
 function updateCountdown() {
@@ -134,27 +99,25 @@ const usdcInput = document.getElementById("usdcAmount");
 tokenInput.oninput = function() {
   if (tokenInput.value && !isNaN(tokenInput.value) && tokenInput.value > 0) {
     usdcInput.value = (tokenInput.value * PHASE1_PRICE_USDC).toFixed(2);
-  } else { usdcInput.value = ""; }
+  } else usdcInput.value = "";
 };
 usdcInput.oninput = function() {
   if (usdcInput.value && !isNaN(usdcInput.value) && usdcInput.value > 0) {
     tokenInput.value = (usdcInput.value / PHASE1_PRICE_USDC).toFixed(2);
-  } else { tokenInput.value = ""; }
+  } else tokenInput.value = "";
 };
 
 let provider, signer, connectedAddress;
-
-async function connectWallet() {
+document.getElementById("connectWalletBtn").onclick = async () => {
   const walletStatus = document.getElementById("walletStatus");
   walletStatus.textContent = "";
-
+  if (!window.ethereum) {
+    walletStatus.textContent = "MetaMask not detected. Please install and enable it.";
+    return;
+  }
   try {
-    const web3Modal = new window.Web3Modal.default({
-      cacheProvider: false,
-      providerOptions: {} // Defaults to MetaMask + WalletConnect support
-    });
-    const instance = await web3Modal.connect();
-    provider = new ethers.providers.Web3Provider(instance);
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
     signer = provider.getSigner();
     connectedAddress = await signer.getAddress();
     document.getElementById("buyWithEthBtn").disabled = false;
@@ -162,9 +125,7 @@ async function connectWallet() {
   } catch (err) {
     walletStatus.textContent = "Wallet connection failed: " + (err.message || err);
   }
-}
-
-document.getElementById("connectWalletBtn").onclick = connectWallet;
+};
 
 document.getElementById("buyWithEthBtn").onclick = async () => {
   const buyResult = document.getElementById("buyResult");
@@ -196,3 +157,4 @@ document.getElementById("buyWithEthBtn").onclick = async () => {
 </script>
 </body>
 </html>
+

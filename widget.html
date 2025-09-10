@@ -1,3 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ITC Presale Purchase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <style>
+    body {
+      background: linear-gradient(120deg, #16233b, #2986e7 100%);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #presale-widget {
+      background: linear-gradient(135deg, #0a1a35 0%, #1e2d3d 35%, #2d6cf6 100%);
+      color: #fafcff;
+      border-radius: 22px;
+      padding: 36px 24px 32px 24px;
+      max-width: 370px;
+      box-shadow: 0px 4px 32px rgba(20,40,100,0.32);
+      text-align: center;
+      margin: 0 auto;
+    }
+    #countdown {
+      font-size:18px; margin-bottom:8px; color: #00ffe7;
+    }
+    .msg-main { font-size:16px; margin-bottom:8px; }
+    .msg-urgency { color:#ffecb6; margin-bottom:14px; font-size:15px; }
+    .input-row { margin-bottom:10px; display:flex; gap:6px; justify-content:center; }
+    input[type="number"] {
+      width:48%; padding:7px; font-size:16px; border-radius:10px; border:none;
+      background: #182a47; color: #fafcff;
+    }
+    button {
+      background: linear-gradient(90deg, #2038a8, #2d6cf6 70%);
+      color: #fff; border: none; font-size:18px; padding:12px 32px; margin-top: 6px;
+      border-radius:13px; cursor:pointer; font-weight:600; letter-spacing:1px; transition: background 0.3s;
+      box-shadow: 0 8px 24px rgba(44,108,246,0.23);
+    }
+    #buyWithEthBtn:disabled { background: #2d3847; color: #aac2ff; cursor: not-allowed;}
+    #walletStatus { color:#affcff; font-size:15px; margin-bottom:8px; min-height:24px;}
+    #buyResult { margin-top:14px; color:#affcff; font-size:15px; min-height:24px;}
+    @media (max-width:480px) {
+      #presale-widget { max-width:97vw; padding:22px; }
+      input[type="number"] { font-size:15px; }
+      button { font-size:16px; padding:10px 12px;}
+      .msg-main, .msg-urgency { font-size:14px; }
+    }
+  </style>
+</head>
+<body>
 <div id="presale-widget">
   <h2 style="margin-bottom: 20px;">ITC Presale Purchase</h2>
   <div id="countdown"></div>
@@ -17,16 +72,19 @@
   <div id="buyResult"></div>
 </div>
 <script>
-const PHASE1_DURATION = 180 * 24 * 60 * 60 * 1000; // 180 days
 const PHASE1_PRICE_USDC = 0.50;
+// Optional: fetch live ETH/USD price for up-to-date rates (can integrate if you wish)
 const ETH_PRICE_USDC = 4302.55;
 const PRESALE_CONTRACT = "0xd1887abfadc7b5de18c54a547490c8dea792686b";
 const ITC_TOKEN_DECIMALS = 18;
 const presaleAbi = ["function buyWithETH(uint256 tokenAmount) external payable"];
-const presaleStartTime = Date.now();
+// 180 days countdown phase
+const PHASE1_DURATION = 180 * 24 * 60 * 60 * 1000;
+const PRESALE_START_ISO = '2025-09-10T00:00:00Z';
+const presaleStart = new Date(PRESALE_START_ISO).getTime();
 function updateCountdown() {
   let now = Date.now();
-  let remainingMs = PHASE1_DURATION - (now - presaleStartTime);
+  let remainingMs = PHASE1_DURATION - (now - presaleStart);
   if (remainingMs < 0) remainingMs = 0;
   let totalSecs = Math.floor(remainingMs / 1000);
   let days = Math.floor(totalSecs / (24 * 3600));
@@ -38,31 +96,14 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000); updateCountdown();
 const tokenInput = document.getElementById("tokenAmount");
 const usdcInput = document.getElementById("usdcAmount");
-// Keep ITC input to max 18 decimals and valid
-function sanitizeAmount(val) {
-  val = (val || '').toString().replace(/[^0-9.]/g, '').replace(/^0+([1-9])/g, '$1').trim();
-  if(val === "") return "";
-  if(val.includes('.')) {
-    let [whole, fraction] = val.split('.');
-    fraction = (fraction || '').replace(/0+$/, '').slice(0, 18);
-    return whole + (fraction ? '.' + fraction : '');
-  }
-  return val;
-}
 tokenInput.oninput = function() {
-  let val = sanitizeAmount(tokenInput.value);
-  if (val && !isNaN(val) && Number(val) > 0) {
-    tokenInput.value = val; // enforce sanitation
-    usdcInput.value = (Number(val) * PHASE1_PRICE_USDC).toFixed(2);
-  } else {
-    usdcInput.value = "";
-  }
+  if (tokenInput.value && !isNaN(tokenInput.value) && tokenInput.value > 0) {
+    usdcInput.value = (tokenInput.value * PHASE1_PRICE_USDC).toFixed(2);
+  } else usdcInput.value = "";
 };
 usdcInput.oninput = function() {
-  let val = sanitizeAmount(usdcInput.value);
-  if (val && !isNaN(val) && Number(val) > 0) {
-    usdcInput.value = val;
-    tokenInput.value = (Number(val) / PHASE1_PRICE_USDC).toFixed(2);
+  if (usdcInput.value && !isNaN(usdcInput.value) && usdcInput.value > 0) {
+    tokenInput.value = (usdcInput.value / PHASE1_PRICE_USDC).toFixed(2);
   } else tokenInput.value = "";
 };
 let provider, signer, connectedAddress;
@@ -84,6 +125,16 @@ document.getElementById("connectWalletBtn").onclick = async () => {
     walletStatus.textContent = "Wallet connection failed: " + (err.message || err);
   }
 };
+// Helper: max 18 decimals (avoid ethers.js bug)
+function sanitizeAmount(val) {
+  val = String(val || '').trim();
+  if (val.includes('.')) {
+    let [whole, fraction] = val.split('.');
+    fraction = (fraction || '').slice(0, 18).replace(/0+$/, "");
+    return whole + (fraction ? '.' + fraction : '');
+  }
+  return val;
+}
 document.getElementById("buyWithEthBtn").onclick = async () => {
   const buyResult = document.getElementById("buyResult");
   buyResult.textContent = "";
@@ -91,7 +142,8 @@ document.getElementById("buyWithEthBtn").onclick = async () => {
     buyResult.textContent = "Please connect your wallet first.";
     return;
   }
-  let tokenAmountVal = sanitizeAmount(tokenInput.value);
+  let tokenAmountVal = tokenInput.value;
+  tokenAmountVal = sanitizeAmount(tokenAmountVal);
   if (!tokenAmountVal || isNaN(tokenAmountVal) || tokenAmountVal <= 0) {
     buyResult.textContent = "Enter a valid ITC amount.";
     return;
@@ -99,9 +151,7 @@ document.getElementById("buyWithEthBtn").onclick = async () => {
   try {
     const contract = new ethers.Contract(PRESALE_CONTRACT, presaleAbi, signer);
     const ethPricePerToken = PHASE1_PRICE_USDC / ETH_PRICE_USDC;
-    const ethValue = ethers.utils.parseEther(
-      (ethPricePerToken * tokenAmountVal).toString()
-    );
+    const ethValue = ethers.utils.parseEther((ethPricePerToken * tokenAmountVal).toString());
     const tx = await contract.buyWithETH(
       ethers.utils.parseUnits(tokenAmountVal, ITC_TOKEN_DECIMALS),
       { value: ethValue }
@@ -112,3 +162,5 @@ document.getElementById("buyWithEthBtn").onclick = async () => {
   }
 };
 </script>
+</body>
+</html>

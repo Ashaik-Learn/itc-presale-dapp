@@ -10,14 +10,10 @@
   <style>
     :root {
       --main-dark: #0c192d;
-      --main-blue: #183052;
-      --main-grad2: #283e73;
+      --gold: #d4af37;
       --accent: #38cfea;
-      --glass-bg: rgba(20, 36, 62, 0.78);
-      --widget-bg: rgba(19, 34, 54, 0.92);
-      --widget-gradient: linear-gradient(120deg, rgba(21,36,67,0.90) 80%, rgba(45,108,246,0.11));
-      --shadow: 0 8px 40px 0 rgba(18,32,49,0.18);
-      --border-r: 22px;
+      --trans-bg: rgba(36, 64, 104, 0.15);
+      --glass-bg: rgba(20, 36, 62, 0.00);
     }
     body {
       min-height: 100vh;
@@ -29,7 +25,6 @@
       position: relative;
       overflow-x: hidden;
     }
-    /* Watermark logo */
     .watermark {
       position: fixed;
       top: 52%;
@@ -37,20 +32,19 @@
       transform: translate(-50%, -50%);
       width: 560px;
       max-width: 100vw;
-      opacity: 0.06;
+      opacity: 0.04;
       pointer-events: none;
       user-select: none;
       z-index: 1;
-      filter: blur(0.9px) saturate(0.6);
+      filter: blur(0.8px) saturate(0.5);
     }
-    /* Main content layout */
     .main-container {
       display: flex;
       flex-direction: row;
       justify-content: center;
       align-items: flex-start;
-      gap: 54px;
-      padding: 64px 0 0 0;
+      gap: 48px;
+      padding: 38px 0 0 0;
       min-height: 92vh;
       position: relative;
       z-index: 2;
@@ -58,97 +52,119 @@
     .left-side {
       flex: 1.3;
       max-width: 490px;
-      padding-left: 68px;
+      padding-left: 30px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      gap: 2vh;
     }
     .logo-header {
       display: flex;
       align-items: center;
-      margin-bottom: 22px;
+      margin-bottom: 28px;
+      background: none;
     }
     .logo-header img {
-      height: 64px;
-      width: 64px;
+      height: 64px; width: 64px;
       border-radius: 14px;
       object-fit: contain;
-      background: rgba(20, 31, 48, 0.82);
-      box-shadow: 0 4px 28px 3px rgba(30,60,120,0.23);
-      margin-right: 20px;
-      padding: 9px;
-      filter: brightness(1.07) drop-shadow(0 0 8px #203a75aa);
-      transition: box-shadow 0.26s;
-      border: 2px solid #273d56;
+      background: transparent;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+      /* Soften edges */
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, white 83%, transparent 100%);
+      mask-image: radial-gradient(circle at 50% 50%, white 83%, transparent 100%);
     }
     .logo-header h1 {
       font-family: 'Montserrat', 'Inter', Arial, sans-serif;
       font-size: 2.12rem;
       font-weight: 700;
-      color: #fff;
+      color: var(--gold);
       letter-spacing: 0.17em;
-      margin: 0;
+      margin: 0 0 0 18px;
       padding: 0;
-      text-shadow: 0 4px 18px #15346136;
+      text-shadow: 0 2px 10px #fff6, 0 1px 7px #9b7b2d33;
     }
     .info-card {
-      margin-bottom: 28px;
-      width: 98%;
-      background: var(--glass-bg);
-      border-radius: var(--border-r);
-      box-shadow: var(--shadow);
-      padding: 22px 28px 19px 28px;
-      backdrop-filter: blur(10px) saturate(1.4);
-      border: 1px solid rgba(74,122,255,0.075);
+      margin-bottom: 0;
+      width: 100%;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 22px 0 10px 0;
       font-size: 1.09rem;
       transition: background 0.32s;
     }
-    .info-card strong, .info-card ul {
-      color: #4fedff;
+    .info-card strong,
+    .info-card ul {
+      color: #43e6ff;
       font-weight: 700;
     }
     .info-card ul {
-      color: #5dfbff;
+      color: #43e6ff;
       font-size: 1rem;
       margin-bottom: 0;
       margin-top: 10px;
+      padding-left: 24px;
     }
     .thanks-card {
       color: #ffc;
-      background: rgba(81,79,52,0.12);
+      background: transparent;
       font-size: 1.06rem;
       margin-bottom: 0;
     }
+    .thanks-card strong, .thanks-card span { color: var(--accent);}
+    .thanks-card .highlighted { color: #43e6ff; }
+
     .right-side {
       flex: 1.1;
-      min-width: 330px;
+      min-width: 340px;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      padding-right: 44px;
       z-index: 2;
+      padding-right: 26px;
     }
     #presale-widget {
-      width: 370px;
-      border-radius: var(--border-r);
-      background: var(--widget-gradient);
-      box-shadow: 0px 4px 32px #111e2b44, 0 1px 3px #00ffe72c;
-      padding: 44px 32px 36px 32px;
+      width: 375px;
+      border-radius: 18px;
+      background: rgba(20,36,62,0.88);
+      box-shadow: 0px 4px 16px #111e2b27, 0 1px 3px #00ffe72c;
+      padding: 35px 29px 30px 29px;
       color: #fff;
       text-align: center;
       position: relative;
       z-index: 3;
       margin: 0;
-      border: 1px solid rgba(90,180,255,0.06);
-      backdrop-filter: blur(9px) saturate(1.1);
-      /* Glass effect */
-      background-clip: padding-box;
+      border: 1px solid rgba(90,180,255,0.07);
+      backdrop-filter: blur(10px);
     }
-    #presale-widget h2 {
+    #tab-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 18px;
+      width: 100%;
+    }
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 12px 0;
+      font-size: 1.09rem;
+      font-weight: 600;
+      color: #a4cfff;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.19s, color 0.19s;
+      outline: none;
+    }
+    .tab-btn.active {
+      background: linear-gradient(93deg, #31afe6 50%, #2d6cf6 98%);
       color: #fff;
-      font-family: 'Montserrat', Arial, sans-serif;
-      font-size: 1.38rem;
-      margin-bottom: 16px;
+      box-shadow: 0 1px 12px #2fc5ff19;
     }
     #countdown-timer {
       font-size:1.12rem;
@@ -166,28 +182,39 @@
     }
     .msg-urgency {
       margin-bottom:13px;
-      color:#ffecb6;
-      font-size: 1rem;
+      color: #ffe8a7;
+      font-size: 1.03rem;
       text-shadow:0 1px 4px #1b416e22;
     }
-    #connectWalletBtn {
-      width:100%;
-      background: linear-gradient(93deg,#31afe6 30%,#2d6cf6 97%);
-      color: #fff;
-      border: none;
-      font-size: 1.06rem;
-      font-family:inherit;
-      padding: 13px 0;
-      border-radius: 14px;
-      cursor:pointer;
-      font-weight: 700;
-      letter-spacing: 1px;
-      margin-top: 13px;
-      margin-bottom: 10px;
-      box-shadow: 0 1px 14px 0 #2fc5ff18;
-      transition: background 0.26s;
+    .wallet-choice-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 14px;
+      margin-top: 2px;
     }
-    #connectWalletBtn:hover { background: linear-gradient(91deg,#2d8ea8 30%,#2d6cf6 99%);}
+    .wallet-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      border-radius: 9px;
+      padding: 7px 15px;
+      font-size: 1rem;
+      cursor: pointer;
+      background: #17365c55;
+      border: 1.5px solid transparent;
+      transition: border 0.17s, background 0.26s;
+    }
+    .wallet-pill.selected {
+      border: 1.5px solid #2dcff7;
+      background: #1e376255;
+    }
+    .wallet-pill img {
+      height: 18px;
+      width: 18px;
+      border-radius: 3px;
+    }
     .input-label {
       display: flex;
       justify-content: flex-start;
@@ -199,87 +226,98 @@
     .buy-input-row {
       display: flex;
       align-items: center;
-      margin-bottom: 9px;
       gap: 9px;
+      margin-bottom: 6px;
+      width: 100%;
     }
-    input[type="number"] {
+    .buy-input-row input[type="number"] {
       width: 100%;
       padding: 9px;
-      font-size: 1.04rem;
+      font-size: 1.07rem;
       border-radius: 10px;
       border: none;
       background: #14233e;
       color: #edeeff;
       box-shadow: 0 1px 9px #2353ff20;
-      margin-bottom: 2px;
       outline: none;
-      transition: border 0.17s;
+      transition: border 0.14s;
     }
-    input[type="number"]:focus {
+    .buy-input-row input[type="number"]:focus {
       border: 1.3px solid #22c1ff;
       background: #193869;
     }
-    .usdc-eq-row {
-      color: #74fbc6;
-      margin-bottom: 7px;
-      font-size: 1.02rem;
+    .input-eq-label {
+      font-size: 1rem;
+      color: #44ffd1;
+      margin-bottom: 6px;
     }
-    #buyWithEthBtn {
+    .payment-list {
+      text-align: center;
+      color: #7cd4ff;
+      margin: 12px 0 10px 0;
+      font-size: 1.08rem;
+      font-weight: 600;
+    }
+    #connectWalletBtn, #buyWithEthBtn, #buyWithCardBtn {
       width: 100%;
-      background: linear-gradient(90deg, #2338a8, #2194f8 70%);
+      background: linear-gradient(93deg,#31afe6 30%,#2d6cf6 97%);
       color: #fff;
       border: none;
-      font-size: 1.07rem;
+      font-size: 1.13rem;
+      font-family:inherit;
       padding: 13px 0;
       border-radius: 13px;
-      cursor: pointer;
-      font-weight:600;
-      letter-spacing:1px;
-      margin: 11px 0 3px 0;
-      transition: background 0.31s;
-      box-shadow: 0 6px 18px rgba(34,158,246,0.12);
-      text-shadow: 0 1px 3px #19386948;
+      cursor:pointer;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 14px 0 #2fc5ff17;
+      transition: background 0.23s;
+      margin-top: 3px;
     }
-    #buyWithEthBtn:disabled { background: #2d3847; color: #aac2ff; cursor: not-allowed;}
+    #connectWalletBtn:disabled, #buyWithEthBtn:disabled, #buyWithCardBtn:disabled {
+      background: #2d3847; color: #aac2ff; cursor: not-allowed;
+    }
     #walletStatus, #buyResult { font-size: 0.99rem; min-height: 24px; }
     #footer-bar {
       text-align: center;
       color: #9fc6e7;
-      font-size: 16px;
-      margin: 37px 0 10px 0;
+      font-size: 15px;
+      margin: 33px 0 10px 0;
       font-family: 'Inter',sans-serif;
       opacity: 0.83;
       z-index: 100;
     }
-    /* Responsive tweaks */
-    @media (max-width: 1000px) {
-      .main-container {flex-direction: column; align-items: center; padding: 22px 0 0 0;}
-      .left-side, .right-side {padding: 0 8vw; max-width:100vw;}
+    @media (max-width: 1050px) {
+      .main-container {
+        flex-direction: column; align-items: center; gap: 24px; padding: 12px 0 0 0;
+      }
+      .left-side, .right-side {padding: 0 4vw; max-width:100vw;}
       .right-side {align-items: center; padding-right:0;}
     }
-    @media (max-width: 700px) {
-      .logo-header img {height: 46px; width: 46px;}
-      .logo-header h1 {font-size: 1.28rem;}
-      #presale-widget {padding:19px 7vw; width:96vw; min-width: 0;}
-      .info-card {padding:11px 6vw;}
+    @media (max-width:700px) {
+      .logo-header img {height: 40px; width: 40px;}
+      .logo-header h1 {font-size: 1.15rem;}
+      #presale-widget {padding:14px 3vw; width:99vw; min-width: 0;}
+      .info-card {padding:7px 2vw;}
     }
   </style>
 </head>
 <body>
-  <!-- Watermark logo, must be in root as fulllogo_transparent_nobuffer.png -->
+  <!-- Watermark logo background -->
   <img src="fulllogo_transparent_nobuffer.png" class="watermark" alt="IT Capitals Watermark" />
   <div class="main-container">
     <div class="left-side">
       <div class="logo-header">
-        <img src="fulllogo_transparent_nobuffer.png" alt="IT Capitals Logo" />
+        <img src="attached_image:1" alt="IT Capitals Logo"/>
         <h1>IT CAPITALS</h1>
       </div>
-      <div class="info-card" style="margin-bottom:21px;">
+      <div class="info-card">
         <strong>Founded:</strong> February 2025<br>
         IT Capitals specializes in <strong>blockchain development</strong> and <strong>DAPP creation</strong>, IT infrastructure solutions, and advanced website management for clients aiming for digital excellence.
       </div>
-      <div class="info-card" style="margin-bottom:17px;">
-        <strong>Introducing ITC Token</strong>:<br>
+      <div class="info-card">
+        <strong>Introducing ITC Token:</strong><br>
         A utility token for a next-generation digital rewards and services ecosystem.
         <ul>
           <li>Earn by referring clients or using IT Capitals’ solutions</li>
@@ -290,124 +328,190 @@
       </div>
       <div class="info-card thanks-card">
         <strong>With gratitude:</strong><br>
-        Special thanks to <strong>Mr. MM</strong> for visionary ideas and helping build the foundation of IT Capitals.
+        Special thanks to <span class="highlighted">Mr. MM</span> for visionary ideas and helping build the foundation of IT Capitals.
       </div>
     </div>
     <div class="right-side">
       <div id="presale-widget">
-        <h2>ITC Presale Purchase</h2>
-        <div id="countdown-timer"></div>
-        <div class="msg-main">
-          <strong>Phase 1:</strong> <span style="color:#affcff;">$0.50 USDC / ITC</span>
+        <div id="tab-row">
+          <button class="tab-btn active" id="tab-card">Pay with Card</button>
+          <button class="tab-btn" id="tab-wallet">Pay with Wallet</button>
         </div>
-        <div class="msg-urgency">
-          🚀🚀🚀 Price goes up to $0.75 USDC next phase!
+        <div id="widget-main-area">
+          <!-- Will inject either Card or Wallet payment UI here -->
         </div>
-        <button id="connectWalletBtn">Connect MetaMask</button>
-        <div id="walletStatus"></div>
-        <div class="input-label">Buy ITC:</div>
-        <div class="buy-input-row">
-          <input id="tokenAmount" type="number" min="1" placeholder="ITC Amount" />
-        </div>
-        <div class="input-label" style="margin-bottom:3px;">Equivalent in USDC:</div>
-        <div class="usdc-eq-row"><span id="usdcEquiv">0.00</span> USDC</div>
-        <button id="buyWithEthBtn" disabled>Buy ITC With ETH</button>
-        <div id="buyResult"></div>
       </div>
     </div>
   </div>
   <div id="footer-bar">
     Powered by IT Capitals, ON, Canada.
   </div>
-<script>
-// Universal UTC countdown for 5 months 28 days from start date
-const PRESALE_START_ISO = '2025-09-10T00:00:00Z';
-const presaleStart = new Date(PRESALE_START_ISO);
-function addMonthsAndDays(date, months, days) {
-  let d = new Date(date);
-  d.setUTCMonth(d.getUTCMonth() + months);
-  d.setUTCDate(d.getUTCDate() + days);
-  return d;
-}
-const PRESALE_END = addMonthsAndDays(presaleStart, 5, 28);
+  <script>
+    // Widget constants/config
+    const PHASE1_PRICE_USDC = 0.50;
+    const PRESALE_END = new Date(Date.UTC(2026, 2, 8, 0,0,0));
+    const ITC_TOKEN_DECIMALS = 18; // for ethers.js
+    const ETH_PRICE_USDC = 4302.55; // TODO: Replace with real time feed as needed
+    const CURRENCIES = [
+      {symbol: "ETH", name: "Ethereum (Sepolia)", icon: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=026"},
+      {symbol: "PYUSD", name: "PYUSD", icon: "https://cryptologos.cc/logos/paypal-usd-pyusd-logo.svg?v=026"},
+      {symbol: "T2TO", name: "T2TO", icon: "https://cryptologos.cc/logos/tether-usdt-logo.svg?v=026"}
+    ];
+    // Countdown timer logic
+    function updateCountdownTimer() {
+      const now = new Date();
+      let remainingMs = PRESALE_END.getTime() - now.getTime();
+      if (remainingMs < 0) remainingMs = 0;
+      let totalSecs = Math.floor(remainingMs / 1000);
+      let days = Math.floor(totalSecs / (24 * 3600));
+      let hours = Math.floor((totalSecs % (24 * 3600)) / 3600);
+      let mins = Math.floor((totalSecs % 3600) / 60);
+      let secs = totalSecs % 60;
+      document.getElementById("countdown-timer") &&
+        (document.getElementById("countdown-timer").textContent =
+          (remainingMs > 0)
+            ? `Presale countdown (UTC): ${days}d ${hours}h ${mins}m ${secs}s left`
+            : "Presale finished!");
+    }
+    setInterval(updateCountdownTimer, 1000);
 
-function updateCountdownTimer() {
-  const now = new Date();
-  let remainingMs = PRESALE_END.getTime() - now.getTime();
-  if (remainingMs < 0) remainingMs = 0;
-  let totalSecs = Math.floor(remainingMs / 1000);
-  let days = Math.floor(totalSecs / (24 * 3600));
-  let hours = Math.floor((totalSecs % (24 * 3600)) / 3600);
-  let mins = Math.floor((totalSecs % 3600) / 60);
-  let secs = totalSecs % 60;
-  document.getElementById("countdown-timer").textContent =
-    (remainingMs > 0)
-    ? `Presale countdown (UTC): ${days}d ${hours}h ${mins}m ${secs}s left`
-    : "Presale finished!";
-}
-setInterval(updateCountdownTimer, 1000); updateCountdownTimer();
+    // --- UI switching logic for tabs ---
+    const widgetMainArea = document.getElementById('widget-main-area');
+    function showCardUI() {
+      widgetMainArea.innerHTML = `
+        <div style="margin-bottom:10px;">
+          <h2 style="margin-bottom:13px;">ITC Presale Purchase</h2>
+          <div id="countdown-timer"></div>
+          <div class="msg-main"><strong>Phase 1:</strong> <span style="color:#43e6ff;">$0.50 USDC / ITC</span></div>
+          <div class="msg-urgency">🚀🚀🚀 Price goes up to $0.75 USDC next phase!</div>
+        </div>
+        <div class="input-label">Select amount to purchase:</div>
+        <div class="buy-input-row" style="margin-bottom:3px;">
+          <input type="number" id="cardItnInput" min="0" step="any" placeholder="ITC Amount" style="margin-right:7px;">
+          <span style="font-size:1.23em; color:#bbb; font-weight:bold;">or</span>
+          <input type="number" id="cardUsdInput" min="0" step="any" placeholder="USD Amount">
+        </div>
+        <div class="input-eq-label">
+            <span id="card-eq-summary">1 ITC = $0.50 USDC</span>
+        </div>
+        <button id="buyWithCardBtn" disabled>Buy ITC With Card (Coming Soon)</button>
+        <div class="payment-list">Payment methods: <span style="color:#8ce0fc;">Visa, Mastercard</span></div>
+      `;
+      bindDualInputs('cardItnInput', 'cardUsdInput');
+      updateCountdownTimer();
+    }
+    function showWalletUI() {
+      // Default to ETH option
+      widgetMainArea.innerHTML = `
+        <div style="margin-bottom:10px;">
+          <h2 style="margin-bottom:12px;">ITC Presale Purchase</h2>
+          <div id="countdown-timer"></div>
+          <div class="msg-main"><strong>Phase 1:</strong> <span style="color:#43e6ff;">$0.50 USDC / ITC</span></div>
+          <div class="msg-urgency">🚀🚀🚀 Price goes up to $0.75 USDC next phase!</div>
+        </div>
+        <div class="wallet-choice-row" id="walletChoiceRow">
+          ${CURRENCIES.map((cur, i) => `
+            <div class="wallet-pill${i===0?' selected':''}" data-idx="${i}">
+              <img src="${cur.icon}" alt="${cur.symbol}"/> ${cur.symbol}
+            </div>
+          `).join('')}
+        </div>
+        <div class="input-label">Select amount to purchase:</div>
+        <div class="buy-input-row">
+          <input type="number" id="walletItnInput" min="0" step="any" placeholder="ITC Amount" style="margin-right:7px;">
+          <span style="font-size:1.23em; color:#bbb; font-weight:bold;">or</span>
+          <input type="number" id="walletUsdInput" min="0" step="any" placeholder="USD Amount">
+        </div>
+        <div class="input-eq-label">
+          <span id="wallet-eq-summary">1 ITC = $0.50 USDC</span>
+        </div>
+        <div id="wallet-payment-desc" class="payment-list" style="margin-bottom:6px;">
+          Pay with <span style="font-weight:700;color:#8ce0fc;">Ethereum (Sepolia)</span>, <span style="font-weight:700;color:#8ce0fc;">PYUSD</span>, or <span style="font-weight:700;color:#8ce0fc;">T2TO</span> wallet
+        </div>
+        <button id="connectWalletBtn">Connect Wallet</button>
+        <div id="walletStatus"></div>
+        <button id="buyWithEthBtn" disabled>Buy ITC With Wallet</button>
+        <div id="buyResult" style="margin-top:6px;"></div>
+      `;
+      bindDualInputs('walletItnInput', 'walletUsdInput');
+      updateWalletPillListeners();
+      updateCountdownTimer();
+    }
 
-const PHASE1_PRICE_USDC = 0.50;
-const ETH_PRICE_USDC = 4302.55;
-const PRESALE_CONTRACT = "0xd1887abfadc7b5de18c54a547490c8dea792686b";
-const ITC_TOKEN_DECIMALS = 18;
-const presaleAbi = ["function buyWithETH(uint256 tokenAmount) external payable"];
-const tokenInput = document.getElementById("tokenAmount");
-const usdcEquiv = document.getElementById("usdcEquiv");
-tokenInput.oninput = function() {
-  let val = tokenInput.value;
-  if (val && !isNaN(val) && val > 0) {
-    usdcEquiv.innerText = (val * PHASE1_PRICE_USDC).toFixed(2);
-  } else {
-    usdcEquiv.innerText = "0.00";
-  }
-};
-let provider, signer, connectedAddress;
-document.getElementById("connectWalletBtn").onclick = async () => {
-  const walletStatus = document.getElementById("walletStatus");
-  walletStatus.textContent = "";
-  if (!window.ethereum) {
-    walletStatus.textContent = "MetaMask not detected. Please install and enable it.";
-    return;
-  }
-  try {
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    signer = provider.getSigner();
-    connectedAddress = await signer.getAddress();
-    document.getElementById("buyWithEthBtn").disabled = false;
-    walletStatus.textContent = `Connected: ${connectedAddress}`;
-  } catch (err) {
-    walletStatus.textContent = "Wallet connection failed: " + (err.message || err);
-  }
-};
-document.getElementById("buyWithEthBtn").onclick = async () => {
-  const buyResult = document.getElementById("buyResult");
-  buyResult.textContent = "";
-  if (!provider || !signer || !connectedAddress) {
-    buyResult.textContent = "Please connect your wallet first.";
-    return;
-  }
-  const tokenAmountVal = tokenInput.value;
-  if (!tokenAmountVal || isNaN(tokenAmountVal) || tokenAmountVal <= 0) {
-    buyResult.textContent = "Enter a valid ITC amount.";
-    return;
-  }
-  try {
-    const contract = new ethers.Contract(PRESALE_CONTRACT, presaleAbi, signer);
-    const ethPricePerToken = PHASE1_PRICE_USDC / ETH_PRICE_USDC;
-    const ethValue = ethers.utils.parseEther(
-      (ethPricePerToken * tokenAmountVal).toString()
-    );
-    const tx = await contract.buyWithETH(
-      ethers.utils.parseUnits(tokenAmountVal.toString(), ITC_TOKEN_DECIMALS),
-      { value: ethValue }
-    );
-    buyResult.textContent = "✅ Transaction sent! Tx Hash: " + tx.hash;
-  } catch (err) {
-    buyResult.textContent = "❌ Error: " + (err.message || err);
-  }
-};
-</script>
+    // Keep track of selected payment; could extend to change rates/currency display.
+    function updateWalletPillListeners() {
+      const pills = document.querySelectorAll('.wallet-pill');
+      pills.forEach((pill,i) => {
+        pill.addEventListener('click', function() {
+          pills.forEach(p=>p.classList.remove('selected'));
+          this.classList.add('selected');
+          let label = CURRENCIES[i].name;
+          document.getElementById('wallet-payment-desc').innerHTML = `Pay with <span style="font-weight:700;color:#8ce0fc;">${label}</span> wallet`;
+        });
+      });
+    }
+    // Bi-directional binding for dual ITC <-> USD input fields
+    function bindDualInputs(tokenInputId, usdInputId) {
+      const tokenInput = document.getElementById(tokenInputId);
+      const usdInput = document.getElementById(usdInputId);
+      let lock=false;
+      tokenInput.addEventListener('input',()=>{if(lock)return;lock=1;usdInput.value=(tokenInput.value*PHASE1_PRICE_USDC).toFixed(2)||"";lock=0;});
+      usdInput.addEventListener('input',()=>{if(lock)return;lock=1;tokenInput.value=(usdInput.value/PHASE1_PRICE_USDC).toFixed(2)||"";lock=0;});
+    }
+
+    // --- Setup tabbed widget switcher ---
+    function activateTab(tabIdx) {
+      const tabBtns = [document.getElementById('tab-card'), document.getElementById('tab-wallet')];
+      tabBtns.forEach((btn,i)=>btn.classList[i===tabIdx?'add':'remove']('active'));
+      if(tabIdx===0) showCardUI(); else showWalletUI();
+    }
+    document.getElementById('tab-card').onclick = ()=>activateTab(0);
+    document.getElementById('tab-wallet').onclick = ()=>activateTab(1);
+
+    // Set initial visible tab on load
+    showCardUI();
+
+    // Example ethers.js: enable and handle wallet connect for further integration as needed
+    let provider, signer, connectedAddress;
+    document.addEventListener('click', function(e){
+      if (e.target && e.target.id==='connectWalletBtn') {
+        const walletStatus = document.getElementById("walletStatus");
+        walletStatus.textContent = "";
+        if (!window.ethereum) {
+          walletStatus.textContent = "MetaMask not detected. Please install and enable it.";
+          return;
+        }
+        window.ethereum.request({method:"eth_requestAccounts"}).then(accounts=>{
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          signer = provider.getSigner();
+          connectedAddress = accounts[0];
+          document.getElementById("buyWithEthBtn").disabled = false;
+          walletStatus.textContent = `Connected: ${connectedAddress}`;
+        }).catch(err=>{
+          walletStatus.textContent = "Wallet connection failed: " + (err.message || err);
+        });
+      }
+    });
+    // Example buy handler for ETH (customize contract and payment logic as needed)
+    document.addEventListener('click', function(e){
+      if (e.target && e.target.id==='buyWithEthBtn') {
+        const buyResult = document.getElementById("buyResult");
+        buyResult.textContent = "";
+        if (!provider || !signer || !connectedAddress) {
+          buyResult.textContent = "Please connect your wallet first.";
+          return;
+        }
+        // Get current input
+        const tokenAmt = document.getElementById('walletItnInput').value;
+        if (!tokenAmt || isNaN(tokenAmt) || tokenAmt <= 0) {
+          buyResult.textContent = "Enter a valid ITC amount.";
+          return;
+        }
+        buyResult.textContent = "This is a demo. Implement mainnet/testnet transaction here.";
+        // Add payment smart contract call logic as needed
+      }
+    });
+
+  </script>
 </body>
 </html>

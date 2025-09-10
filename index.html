@@ -297,9 +297,9 @@ const erc20Abi = [
   "function decimals() view returns (uint8)"
 ];
 const CURRENCIES = [
-  {symbol: "ETH", name: "Ethereum (Sepolia)", icon: "Ethereum-logo.jpg", addr: null, abi: null, decimals: 18},
-  {symbol: "PYUSD", name: "PYUSD", icon: "PYUSD-Logo.jpg", addr: PYUSD_ADDRESS, abi: erc20Abi, decimals: 18},
-  {symbol: "T2TO", name: "T2TO", icon: "T2-Logo.jpg", addr: T2TO_ADDRESS, abi: erc20Abi, decimals: 18},
+  {symbol: "ETH", name: "Ethereum (Sepolia)", icon: "Ethereum-logo.png", addr: null, abi: null, decimals: 18},
+  {symbol: "PYUSD", name: "PYUSD", icon: "PYUSD-Logo.png", addr: PYUSD_ADDRESS, abi: erc20Abi, decimals: 18},
+  {symbol: "T2TO", name: "T2TO", icon: "T2-Logo.png", addr: T2TO_ADDRESS, abi: erc20Abi, decimals: 18},
 ];
 function fetchEthUsd() {
   fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd")

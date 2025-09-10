@@ -178,6 +178,7 @@
       width: 22px;
       border-radius: 3px;
       object-fit: contain;
+      background: #222d;
     }
     .input-label {
       font-size: 16px;
@@ -280,10 +281,10 @@
   </div>
   <div id="footer-bar">Powered by IT Capitals, ON, Canada.</div>
 <script>
-// ---- WALLET + PAYMENT WIDGET LOGIC -----------------------
 const PHASE1_PRICE_USDC = 0.50;
 let currentEthPrice = 4302.55; // fallback
 let provider, signer, connectedAddress, selectedCurrency = "ETH", tokenApproved = false;
+// Make sure these files are in your public/web root directory
 const PRESALE_CONTRACT = "0xd1887abfadc7b5de18c54a547490c8dea792686b";
 const T2TO_ADDRESS = "0xDd0C8f1AA8abDb162632F61EdE9b07ffED1eB333";
 const PYUSD_ADDRESS = "0xCaC524BcA292aaade2DF8A05cC58F0a65B1B3bB9";
@@ -297,10 +298,11 @@ const erc20Abi = [
   "function decimals() view returns (uint8)"
 ];
 const CURRENCIES = [
-  {symbol: "ETH", name: "Ethereum (Sepolia)", icon: "Ethereum-logo.jpg", addr: null, abi: null, decimals: 18},
-  {symbol: "PYUSD", name: "PYUSD", icon: "PYUSD-Logo.jpg", addr: PYUSD_ADDRESS, abi: erc20Abi, decimals: 18},
-  {symbol: "T2TO", name: "T2TO", icon: "T2-Logo.jpg", addr: T2TO_ADDRESS, abi: erc20Abi, decimals: 18},
+  {symbol: "ETH", name: "Ethereum (Sepolia)", icon: "Ethereum-logo.png", addr: null, abi: null, decimals: 18},
+  {symbol: "PYUSD", name: "PYUSD", icon: "PYUSD-Logo.png", addr: PYUSD_ADDRESS, abi: erc20Abi, decimals: 18},
+  {symbol: "T2TO", name: "T2TO", icon: "T2-Logo.png", addr: T2TO_ADDRESS, abi: erc20Abi, decimals: 18},
 ];
+
 function fetchEthUsd() {
   fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd")
     .then(res => res.json())
@@ -309,6 +311,7 @@ function fetchEthUsd() {
 }
 fetchEthUsd();
 setInterval(fetchEthUsd, 15000);
+
 function updatePriceHelpers() {
   const eqSummary = document.getElementById('wallet-eq-summary');
   if (eqSummary) {
@@ -319,6 +322,18 @@ function updatePriceHelpers() {
     }
   }
 }
+
+// Utility: Convert user input to string with max 18 decimals (avoids ethers parseUnits bug)
+function sanitizeAmount(val) {
+  val = String(val || '').trim();
+  if (val.includes('.')) {
+    let [whole, fraction] = val.split('.');
+    fraction = (fraction || '').slice(0, 18).replace(/0+$/, "");
+    return whole + (fraction ? '.' + fraction : '');
+  }
+  return val;
+}
+
 function showWalletUI() {
   document.getElementById('widget-main-area').innerHTML = `
     <h2 style="margin-bottom:13px;">ITC Presale Purchase</h2>
@@ -421,10 +436,12 @@ async function updateApproveUI() {
   if(!token.addr) {approveBtn.style.display="none"; buyBtn.disabled=true; return; }
   const tokenContract = new ethers.Contract(token.addr, erc20Abi, signer);
   const itcInput = document.getElementById('itcInput');
-  let required = ethers.utils.parseUnits(itcInput.value || "0", 18);
+  let amt = sanitizeAmount(itcInput.value);
+  let required;
+  try { required = ethers.utils.parseUnits(amt || "0", 18); } catch { required = ethers.BigNumber.from("0"); }
   try {
     let allowance = await tokenContract.allowance(connectedAddress, PRESALE_CONTRACT);
-    if(allowance.gte(required) && +itcInput.value>0){
+    if(allowance.gte(required) && +amt>0){
       approveBtn.style.display = "none";
       buyBtn.disabled = false;
       tokenApproved = true;
@@ -447,7 +464,8 @@ document.addEventListener('click', async function(e){
     approveBtn.disabled=true;
     try{
       const tokenContract = new ethers.Contract(token.addr, erc20Abi, signer);
-      const value = ethers.utils.parseUnits(itcInput.value, 18);
+      const amt = sanitizeAmount(itcInput.value);
+      const value = ethers.utils.parseUnits(amt, 18);
       const tx = await tokenContract.approve(PRESALE_CONTRACT, value);
       approveBtn.textContent = "Approving...";
       await tx.wait();
@@ -465,24 +483,24 @@ document.addEventListener('click', async function(e){
     buyResult.textContent = "";
     if (!provider || !signer || !connectedAddress) {
       buyResult.textContent = "Please connect your wallet first."; return; }
-    const itcAmount = document.getElementById('itcInput').value;
-    if (!itcAmount || isNaN(itcAmount) || +itcAmount <= 0) {
-      buyResult.textContent = "Enter a valid ITC amount."; return; }
+    let itcAmount = document.getElementById('itcInput').value;
     try {
+      itcAmount = sanitizeAmount(itcAmount);
+      if (!itcAmount || isNaN(itcAmount) || +itcAmount <= 0) {
+        buyResult.textContent = "Enter a valid ITC amount."; return; }
       const contract = new ethers.Contract(PRESALE_CONTRACT, presaleAbi, signer);
       if (selectedCurrency === "ETH") {
         const ethPricePerToken = PHASE1_PRICE_USDC / currentEthPrice;
         const ethValue = ethers.utils.parseEther((+itcAmount*ethPricePerToken).toString());
         const tx = await contract.buyWithETH(
-          ethers.utils.parseUnits(itcAmount.toString(), 18),
+          ethers.utils.parseUnits(itcAmount, 18),
           { value: ethValue }
         );
         buyResult.textContent = "✅ Transaction sent! Tx Hash: " + tx.hash;
       } else {
         const token = CURRENCIES.find(x=>x.symbol===selectedCurrency);
-        // Call buyWithToken for ERC-20
         const tx = await contract.buyWithToken(
-          ethers.utils.parseUnits(itcAmount.toString(), 18),
+          ethers.utils.parseUnits(itcAmount, 18),
           token.addr
         );
         buyResult.textContent = "✅ Transaction sent! Tx Hash: " + tx.hash;
@@ -503,7 +521,6 @@ document.getElementById('tab-card').onclick = function(){
   document.getElementById('tab-wallet').classList.remove('active');
   document.getElementById('widget-main-area').innerHTML = `<div style="margin:40px 0 50px 0;font-size:1.15em;color:#aaa;">Pay with Card - Coming Soon!</div>`;
 };
-// onload: show wallet UI
 showWalletUI();
 </script>
 </body>

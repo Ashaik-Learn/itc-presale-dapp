@@ -2,188 +2,130 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ITC Presale Widget</title>
+  <title>ITC Presale Purchase</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
+      background: linear-gradient(120deg, #16233b, #2986e7 100%);
       min-height: 100vh;
       margin: 0;
-      padding: 0;
-      background: none;
-      font-family: 'Inter', 'Montserrat', Arial, sans-serif;
-      color: #eaf6fd;
-      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     #presale-widget {
-      width: 100%;
-      max-width: 370px;
-      margin: 0 auto;
-      border-radius: 18px;
       background: linear-gradient(135deg, #0a1a35 0%, #1e2d3d 35%, #2d6cf6 100%);
-      box-shadow: 0 4px 16px #162a4a1a, 0 1px 3px #00ffe72c;
-      padding: 35px 20px 32px 20px;
-      color: #fff;
-      text-align: center;
-      position: relative;
-      border: 1px solid rgba(90,180,255,0.07);
-      backdrop-filter: blur(10px);
-    }
-    #tab-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 19px;
-      gap: 12px;
-      width: 100%;
-    }
-    .tab-btn {
-      flex: 1;
-      background: none;
-      border: none;
-      padding: 12px 0;
-      font-size: 1.08rem;
-      font-weight: 600;
-      color: #a4cfff;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.17s, color 0.17s;
-    }
-    .tab-btn.active {
-      background: linear-gradient(93deg, #31afe6 50%, #2d6cf6 98%);
-      color: #fff;
-      box-shadow: 0 1px 12px #2fc5ff19;
-    }
-    .wallet-choice-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 14px; margin: 12px 0 17px 0;
-    }
-    .wallet-pill {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      border-radius: 8px;
-      padding: 7px 15px;
-      font-size: 1rem;
-      cursor: pointer;
-      background: #17365c55;
-      border: 1.5px solid transparent;
-      transition: border 0.17s, background 0.18s;
-      font-weight: 600;
-      color: #fff;
-    }
-    .wallet-pill.selected {
-      border: 2px solid #2dcff7;
-      background: #1e376255;
-    }
-    .wallet-pill img {
-      height: 22px;
-      width: 22px;
-      border-radius: 3px;
-      object-fit: contain;
-      background: #222d;
-    }
-    .input-label {
-      font-size: 16px;
-      color: #a4cfff;
-      text-align:left;
-      margin: 7px 0 4px 0;
-    }
-    .buy-input-row {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      margin-bottom: 6px;
-      width: 100%;
-    }
-    .buy-input-row input[type="number"] {
-      width: 45%;
-      padding: 10px;
-      font-size: 1.05rem;
-      border-radius: 10px;
-      border: none;
-      background: #182a47;
       color: #fafcff;
-      transition: border 0.14s;
-      outline: none;
+      border-radius: 22px;
+      padding: 36px 24px 32px 24px;
+      max-width: 370px;
+      box-shadow: 0px 4px 32px rgba(20,40,100,0.32);
+      text-align: center;
+      margin: 0 auto;
     }
-    .buy-input-row input[type="number"]:focus {
-      border: 1.3px solid #22c1ff;
-      background: #193869;
+    #countdown {
+      font-size:18px; margin-bottom:8px; color: #00ffe7;
     }
-    .input-eq-label { font-size: 1rem; color: #44ffd1; margin-bottom: 7px; }
-    .payment-list { color: #7cd4ff; font-size: 1.06rem; font-weight: 500; margin-bottom: 7px;}
+    .msg-main { font-size:16px; margin-bottom:8px; }
+    .msg-urgency { color:#ffecb6; margin-bottom:14px; font-size:15px; }
+    .input-row { margin-bottom:10px; display:flex; gap:6px; justify-content:center; }
+    input[type="number"] {
+      width:48%; padding:7px; font-size:16px; border-radius:10px; border:none;
+      background: #182a47; color: #fafcff;
+    }
     button {
-      width: 100%;
-      border-radius: 14px;
       background: linear-gradient(90deg, #2038a8, #2d6cf6 70%);
-      color: #fff;
-      border: none;
-      font-size: 1.09rem;
-      padding: 13px 0;
-      cursor:pointer;
-      font-weight: 700;
-      box-shadow: 0 1px 14px 0 #2fc5ff19;
-      transition: background 0.23s;
-      margin-top: 10px;
+      color: #fff; border: none; font-size:18px; padding:12px 32px; margin-top: 6px;
+      border-radius:13px; cursor:pointer; font-weight:600; letter-spacing:1px; transition: background 0.3s;
+      box-shadow: 0 8px 24px rgba(44,108,246,0.23);
     }
-    button:disabled { background: #25344f; color: #b3c0df;}
-    #walletStatus, #buyResult { min-height: 20px; font-size: 1rem;}
-    @media (max-width:500px) {
-      #presale-widget { max-width:98vw; padding:11px;}
+    #buyWithEthBtn:disabled { background: #2d3847; color: #aac2ff; cursor: not-allowed;}
+    #walletStatus { color:#affcff; font-size:15px; margin-bottom:8px; min-height:24px;}
+    #buyResult { margin-top:14px; color:#affcff; font-size:15px; min-height:24px;}
+    @media (max-width:480px) {
+      #presale-widget { max-width:97vw; padding:22px; }
+      input[type="number"] { font-size:15px; }
+      button { font-size:16px; padding:10px 12px;}
+      .msg-main, .msg-urgency { font-size:14px; }
     }
   </style>
 </head>
 <body>
-  <div id="presale-widget">
-    <div id="tab-row">
-      <button class="tab-btn active" id="tab-wallet">Pay with Wallet</button>
-      <button class="tab-btn" id="tab-card">Pay with Card</button>
-    </div>
-    <div id="widget-main-area"></div>
+<div id="presale-widget">
+  <h2 style="margin-bottom: 20px;">ITC Presale Purchase</h2>
+  <div id="countdown"></div>
+  <div class="msg-main">
+    <strong>Phase 1:</strong> <span style="color:#affcff;">$0.50 USDC / ITC</span>
   </div>
+  <div class="msg-urgency">
+    🚀 Hurry! Price goes up to $0.75 USDC next phase!
+  </div>
+  <button id="connectWalletBtn">Connect MetaMask</button>
+  <div id="walletStatus"></div>
+  <div class="input-row">
+    <input id="tokenAmount" type="number" min="1" placeholder="ITC Amount" />
+    <input id="usdcAmount" type="number" min="0" step="0.01" placeholder="USDC Value" />
+  </div>
+  <button id="buyWithEthBtn" disabled>Buy ITC With ETH</button>
+  <div id="buyResult"></div>
+</div>
 <script>
 const PHASE1_PRICE_USDC = 0.50;
-let currentEthPrice = 4302.55;
-let provider, signer, connectedAddress, selectedCurrency = "ETH", tokenApproved = false;
+// Optional: fetch live ETH/USD price for up-to-date rates (can integrate if you wish)
+const ETH_PRICE_USDC = 4302.55;
 const PRESALE_CONTRACT = "0xd1887abfadc7b5de18c54a547490c8dea792686b";
-const T2TO_ADDRESS = "0xDd0C8f1AA8abDb162632F61EdE9b07ffED1eB333";
-const PYUSD_ADDRESS = "0xCaC524BcA292aaade2DF8A05cC58F0a65B1B3bB9";
-const presaleAbi = [
-  "function buyWithETH(uint256 tokenAmount) external payable",
-  "function buyWithToken(uint256 tokenAmount, address erc20Token) external"
-];
-const erc20Abi = [
-  "function approve(address spender, uint256 value) external returns (bool)",
-  "function allowance(address owner, address spender) view returns (uint256)",
-  "function decimals() view returns (uint8)"
-];
-const CURRENCIES = [
-  {symbol: "ETH", name: "Ethereum (Sepolia)", icon: "Ethereum-logo.png", addr: null, abi: null, decimals: 18},
-  {symbol: "PYUSD", name: "PYUSD", icon: "PYUSD-Logo.png", addr: PYUSD_ADDRESS, abi: erc20Abi, decimals: 18},
-  {symbol: "T2TO", name: "T2TO", icon: "T2-Logo.png", addr: T2TO_ADDRESS, abi: erc20Abi, decimals: 18},
-];
-function fetchEthUsd() {
-  fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd")
-    .then(res => res.json())
-    .then(data => { if (data.ethereum && data.ethereum.usd) currentEthPrice = data.ethereum.usd; updatePriceHelpers(); })
-    .catch(()=>{});
+const ITC_TOKEN_DECIMALS = 18;
+const presaleAbi = ["function buyWithETH(uint256 tokenAmount) external payable"];
+// 180 days countdown phase
+const PHASE1_DURATION = 180 * 24 * 60 * 60 * 1000;
+const PRESALE_START_ISO = '2025-09-10T00:00:00Z';
+const presaleStart = new Date(PRESALE_START_ISO).getTime();
+function updateCountdown() {
+  let now = Date.now();
+  let remainingMs = PHASE1_DURATION - (now - presaleStart);
+  if (remainingMs < 0) remainingMs = 0;
+  let totalSecs = Math.floor(remainingMs / 1000);
+  let days = Math.floor(totalSecs / (24 * 3600));
+  let hours = Math.floor((totalSecs % (24 * 3600)) / 3600);
+  let mins = Math.floor((totalSecs % 3600) / 60);
+  document.getElementById("countdown").textContent =
+    `Phase 1 ends in ${days} days, ${hours} hours, ${mins} minutes`;
 }
-fetchEthUsd();
-setInterval(fetchEthUsd, 15000);
-function updatePriceHelpers() {
-  const eqSummary = document.getElementById('wallet-eq-summary');
-  if (eqSummary) {
-    if (selectedCurrency === "ETH") {
-      eqSummary.innerHTML = `1 ITC = ${(PHASE1_PRICE_USDC/currentEthPrice).toFixed(6)} ETH <br>1 ITC = $0.50 USDC`;
-    } else {
-      eqSummary.innerHTML = `1 ITC = $0.50 USDC`;
-    }
+setInterval(updateCountdown, 1000); updateCountdown();
+const tokenInput = document.getElementById("tokenAmount");
+const usdcInput = document.getElementById("usdcAmount");
+tokenInput.oninput = function() {
+  if (tokenInput.value && !isNaN(tokenInput.value) && tokenInput.value > 0) {
+    usdcInput.value = (tokenInput.value * PHASE1_PRICE_USDC).toFixed(2);
+  } else usdcInput.value = "";
+};
+usdcInput.oninput = function() {
+  if (usdcInput.value && !isNaN(usdcInput.value) && usdcInput.value > 0) {
+    tokenInput.value = (usdcInput.value / PHASE1_PRICE_USDC).toFixed(2);
+  } else tokenInput.value = "";
+};
+let provider, signer, connectedAddress;
+document.getElementById("connectWalletBtn").onclick = async () => {
+  const walletStatus = document.getElementById("walletStatus");
+  walletStatus.textContent = "";
+  if (!window.ethereum) {
+    walletStatus.textContent = "MetaMask not detected. Please install and enable it.";
+    return;
   }
-}
+  try {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    signer = provider.getSigner();
+    connectedAddress = await signer.getAddress();
+    document.getElementById("buyWithEthBtn").disabled = false;
+    walletStatus.textContent = `Connected: ${connectedAddress}`;
+  } catch (err) {
+    walletStatus.textContent = "Wallet connection failed: " + (err.message || err);
+  }
+};
+// Helper: max 18 decimals (avoid ethers.js bug)
 function sanitizeAmount(val) {
   val = String(val || '').trim();
   if (val.includes('.')) {
@@ -193,190 +135,32 @@ function sanitizeAmount(val) {
   }
   return val;
 }
-function showWalletUI() {
-  document.getElementById('widget-main-area').innerHTML = `
-    <h2 style="margin-bottom:13px;">ITC Presale Purchase</h2>
-    <div id="countdown-timer" style="font-size:1.15em; color:#43e6ff; font-weight:600;margin-bottom:8px"></div>
-    <div class="msg-main"><strong>Phase 1:</strong> <span style="color:#affcff;">$0.50 USDC / ITC</span></div>
-    <div class="msg-urgency" style="font-size:1em;">🚀🚀🚀 Price goes up to $0.75 USDC next phase!</div>
-    <div class="wallet-choice-row" id="walletChoiceRow">
-      ${CURRENCIES.map((cur, i) => `
-        <div class="wallet-pill${i===0?' selected':''}" data-idx="${i}" id="pill-${cur.symbol}">
-          <img src="${cur.icon}" alt="${cur.symbol} logo"/> ${cur.symbol}
-        </div>`).join('')}
-    </div>
-    <div class="input-label">Select amount to purchase:</div>
-    <div class="buy-input-row">
-      <input type="number" id="itcInput" min="0" step="any" placeholder="ITC Amount" style="margin-right:7px;">
-      <span style="font-size:1.18em; color:#bbb; font-weight:bold;">or</span>
-      <input type="number" id="usdInput" min="0" step="any" placeholder="USD Amount">
-    </div>
-    <div class="input-eq-label" id="wallet-eq-summary">1 ITC = $0.50 USDC</div>
-    <div class="payment-list" id="wallet-payment-desc">Pay with <span style="font-weight:700;color:#8ce0fc;">Ethereum (Sepolia)</span>, <span style="color:#8ce0fc;">PYUSD</span>, or <span style="color:#8ce0fc;">T2TO</span> wallet</div>
-    <button id="connectWalletBtn">Connect Wallet</button>
-    <div id="walletStatus"></div>
-    <button id="approveBtn" style="display:none;">Approve</button>
-    <button id="buyWithBtn" disabled>Buy ITC With Wallet</button>
-    <div id="buyResult"></div>
-  `;
-  updateWalletPillListeners();
-  updatePriceHelpers();
-  bindDualInputs();
-  setCountdownTimer();
-}
-function setCountdownTimer() {
-  const END = new Date("2026-03-09T00:00:00Z").getTime();
-  function tick() {
-    let now = Date.now();
-    let ms = END-now;
-    if (ms<0) ms=0;
-    let d = Math.floor(ms/86400000), h = Math.floor((ms%86400000)/3600000), m = Math.floor((ms%3600000)/60000), s = Math.floor((ms%60000)/1000);
-    document.getElementById("countdown-timer").textContent = `Presale countdown (UTC): ${d}d ${h}h ${m}m ${s}s left`;
-  }
-  tick(); setInterval(tick, 1000);
-}
-function updateWalletPillListeners() {
-  document.querySelectorAll('.wallet-pill').forEach((pill, i) => {
-    pill.onclick = function() {
-      document.querySelectorAll('.wallet-pill').forEach(p=>p.classList.remove('selected'));
-      pill.classList.add('selected');
-      selectedCurrency = CURRENCIES[i].symbol;
-      document.getElementById('wallet-payment-desc').innerHTML = `Pay with <span style="font-weight:700;color:#8ce0fc;">${CURRENCIES[i].name}</span> wallet`;
-      updatePriceHelpers();
-      updateApproveUI();
-    }
-  });
-}
-function bindDualInputs() {
-  let lock=false;
-  const itcInput = document.getElementById('itcInput');
-  const usdInput = document.getElementById('usdInput');
-  itcInput.oninput = function() {
-    if(lock)return; lock=1;
-    usdInput.value = (+itcInput.value * PHASE1_PRICE_USDC).toFixed(2) || "";
-    lock=0;
-    updateApproveUI();
-  }
-  usdInput.oninput = function() {
-    if(lock)return; lock=1;
-    itcInput.value = (+usdInput.value / PHASE1_PRICE_USDC).toFixed(2) || "";
-    lock=0;
-    updateApproveUI();
-  }
-}
-document.addEventListener('click', async function(e) {
-  if (e.target && e.target.id === 'connectWalletBtn') {
-    const walletStatus = document.getElementById("walletStatus");
-    walletStatus.textContent = "";
-    try {
-      if (!window.ethereum) throw new Error("MetaMask not detected.");
-      provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-      await provider.send("eth_requestAccounts", []);
-      signer = provider.getSigner();
-      connectedAddress = await signer.getAddress();
-      document.getElementById("buyWithBtn").disabled = false;
-      walletStatus.textContent = `Connected: ${connectedAddress}`;
-      updateApproveUI();
-    } catch (err) {
-      walletStatus.textContent = "Wallet connection failed: " + (err.message || err);
-    }
-  }
-});
-async function updateApproveUI() {
-  const approveBtn = document.getElementById("approveBtn");
-  const buyBtn = document.getElementById("buyWithBtn");
-  if(selectedCurrency==="ETH"){
-    approveBtn.style.display="none"; buyBtn.disabled=false;
+document.getElementById("buyWithEthBtn").onclick = async () => {
+  const buyResult = document.getElementById("buyResult");
+  buyResult.textContent = "";
+  if (!provider || !signer || !connectedAddress) {
+    buyResult.textContent = "Please connect your wallet first.";
     return;
   }
-  if(!provider || !signer) { approveBtn.style.display="none"; buyBtn.disabled=true; return; }
-  const token = CURRENCIES.find(x=>x.symbol===selectedCurrency);
-  if(!token.addr) {approveBtn.style.display="none"; buyBtn.disabled=true; return; }
-  const tokenContract = new ethers.Contract(token.addr, erc20Abi, signer);
-  const itcInput = document.getElementById('itcInput');
-  let amt = sanitizeAmount(itcInput.value);
-  let required;
-  try { required = ethers.utils.parseUnits(amt || "0", 18); } catch { required = ethers.BigNumber.from("0"); }
+  let tokenAmountVal = tokenInput.value;
+  tokenAmountVal = sanitizeAmount(tokenAmountVal);
+  if (!tokenAmountVal || isNaN(tokenAmountVal) || tokenAmountVal <= 0) {
+    buyResult.textContent = "Enter a valid ITC amount.";
+    return;
+  }
   try {
-    let allowance = await tokenContract.allowance(connectedAddress, PRESALE_CONTRACT);
-    if(allowance.gte(required) && +amt>0){
-      approveBtn.style.display = "none";
-      buyBtn.disabled = false;
-      tokenApproved = true;
-    }else{
-      approveBtn.style.display = "block";
-      buyBtn.disabled = true;
-      tokenApproved = false;
-    }
-  } catch { approveBtn.style.display="block"; buyBtn.disabled=true;tokenApproved=false;}
-}
-document.addEventListener('click', async function(e){
-  if(e.target && e.target.id==="approveBtn") {
-    const approveBtn = document.getElementById("approveBtn");
-    const buyBtn = document.getElementById("buyWithBtn");
-    const itcInput = document.getElementById('itcInput');
-    if(!provider||!signer||!connectedAddress)return;
-    const token = CURRENCIES.find(x=>x.symbol===selectedCurrency);
-    if(!token.addr) return;
-    approveBtn.disabled=true;
-    try{
-      const tokenContract = new ethers.Contract(token.addr, erc20Abi, signer);
-      const amt = sanitizeAmount(itcInput.value);
-      const value = ethers.utils.parseUnits(amt, 18);
-      const tx = await tokenContract.approve(PRESALE_CONTRACT, value);
-      approveBtn.textContent = "Approving...";
-      await tx.wait();
-      approveBtn.textContent = "Approve";
-      buyBtn.disabled = false;
-      tokenApproved = true;
-    }catch(err){approveBtn.textContent="Approve";alert("Approval failed: "+(err.message||err));buyBtn.disabled=true;}
-    approveBtn.disabled=false;
+    const contract = new ethers.Contract(PRESALE_CONTRACT, presaleAbi, signer);
+    const ethPricePerToken = PHASE1_PRICE_USDC / ETH_PRICE_USDC;
+    const ethValue = ethers.utils.parseEther((ethPricePerToken * tokenAmountVal).toString());
+    const tx = await contract.buyWithETH(
+      ethers.utils.parseUnits(tokenAmountVal, ITC_TOKEN_DECIMALS),
+      { value: ethValue }
+    );
+    buyResult.textContent = "✅ Transaction sent! Tx Hash: " + tx.hash;
+  } catch (err) {
+    buyResult.textContent = "❌ Error: " + (err.message || err);
   }
-});
-document.addEventListener('click', async function(e){
-  if (e.target && e.target.id==='buyWithBtn') {
-    const buyResult = document.getElementById("buyResult");
-    buyResult.textContent = "";
-    if (!provider || !signer || !connectedAddress) {
-      buyResult.textContent = "Please connect your wallet first."; return; }
-    let itcAmount = document.getElementById('itcInput').value;
-    try {
-      itcAmount = sanitizeAmount(itcAmount);
-      if (!itcAmount || isNaN(itcAmount) || +itcAmount <= 0) {
-        buyResult.textContent = "Enter a valid ITC amount."; return; }
-      const contract = new ethers.Contract(PRESALE_CONTRACT, presaleAbi, signer);
-      if (selectedCurrency === "ETH") {
-        const ethPricePerToken = PHASE1_PRICE_USDC / currentEthPrice;
-        const ethValue = ethers.utils.parseEther((+itcAmount*ethPricePerToken).toString());
-        const tx = await contract.buyWithETH(
-          ethers.utils.parseUnits(itcAmount, 18),
-          { value: ethValue }
-        );
-        buyResult.textContent = "✅ Transaction sent! Tx Hash: " + tx.hash;
-      } else {
-        const token = CURRENCIES.find(x=>x.symbol===selectedCurrency);
-        const tx = await contract.buyWithToken(
-          ethers.utils.parseUnits(itcAmount, 18),
-          token.addr
-        );
-        buyResult.textContent = "✅ Transaction sent! Tx Hash: " + tx.hash;
-      }
-    } catch (err) {
-      buyResult.textContent = "❌ Error: " + (err.message || err);
-    }
-  }
-});
-document.getElementById('tab-wallet').onclick = function(){
-  document.getElementById('tab-wallet').classList.add('active');
-  document.getElementById('tab-card').classList.remove('active');
-  showWalletUI();
 };
-document.getElementById('tab-card').onclick = function(){
-  document.getElementById('tab-card').classList.add('active');
-  document.getElementById('tab-wallet').classList.remove('active');
-  document.getElementById('widget-main-area').innerHTML = `<div style="margin:40px 0 50px 0;font-size:1.15em;color:#aaa;">Pay with Card - Coming Soon!</div>`;
-};
-showWalletUI();
 </script>
 </body>
 </html>
